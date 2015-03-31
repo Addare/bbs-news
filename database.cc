@@ -44,32 +44,21 @@ int Database::deleteArticle(int newsgroupid, int articleid){
 	return ng->deleteArticle(articleid);
 }
 
-vector<string> Database::listNewsgroups(){
-	std::vector<string> toReturn;
-	for(int i = 0; i < newsgroups.size(); i++){
-		//check stringcast below
-		toReturn.push_back(newsgroups[i].getName() + " : " + string(newsgroups[i].getId());
-	}
-	return toReturn;
+vector<Newsgroup> Database::listNewsgroups(){
+	return newsgroups;
 }
 
-vector<string> Database::listArticles(int newsgroupid){
+vector<Article> Database::listArticles(int newsgroupid){
 	Newsgroup temp = Newsgroup(newsgroupid, "");
 	auto ng = find(newsgroups.begin(), newsgroups.end(), temp);
 	if(ng == newsgroups.end()){
-		vector<string> empty;
+		vector<Article> empty;
 		return empty;
 	}
-	vector<Article> tempArticles = ng->getArticles();
-	vector<string> toReturn;
-	for(int i = 0; i < tempArticles.size(); i++){
-		//check stringcast below
-		toReturn.push_back(tempArticles[i].getName() + " : " + string(tempArticles[i].getId());
-	}
-	return toReturn;
+	return ng->getArticles();
 }
 	
-string Database::readArticle(int newsgroupid, int articleid){
+Article Database::readArticle(int newsgroupid, int articleid){
 	Newsgroup temp = Newsgroup(newsgroupid, "");
 	auto ng = find(newsgroups.begin(), newsgroups.end(), temp);
 	if(ng == newsgroups.end()){
@@ -80,5 +69,5 @@ string Database::readArticle(int newsgroupid, int articleid){
 	if(art == ng.end()){
 		return "";
 	}
-	return art->getText();
+	return art;
 }
