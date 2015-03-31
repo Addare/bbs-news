@@ -40,6 +40,19 @@ int DBinterface::handle_connection(std::shared_ptr<Connection> c){
 			mh.sendCode(Protocol::ANS_END);
 			break;
 
+		case Protocol::COM_CREATE_NG:
+			string ng_name = mh.recString();
+			if(mh.recCode() != Protocol::COM_END){
+				return 1;
+			}
+			if(db.createNewsgroup(ng_name) != 0){
+				mh.sendCode(Protocol::ANS_NAK);
+				mh.sendCode(Protocol::ERR_NG_ALREADY_EXISTS);
+			}else{
+				mh.sendCode(Protocol::ANS_ACK)
+			}
+			mh.sendCode(Protocol::ANS_END);
+			break;
 			//add more cases
 	}
 
