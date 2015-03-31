@@ -1,5 +1,6 @@
 #ifndef MESSAGEHANDLER_H
 #define MESSAGEHANDLER_H
+#include "connection.h"
 
 class Messagehandler
 {
