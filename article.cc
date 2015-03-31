@@ -3,8 +3,11 @@ using namespace std;
 
 
 
-Article::Article(int id, string name, string author, string text) : this->id(id),
- this->name(name), this->author(author), this->text(text){
+Article::Article(int id, string name, string author, string text){
+	this->id = id;
+ 	this->name = name;
+ 	this->author = author;
+ 	this->text = text;
  }
 
 

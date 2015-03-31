@@ -1,13 +1,14 @@
 #include "newsgroup.h"
 using namespace std;
 
-Newsgroup::Newsgroup(int id, string name) : ngid(id), this->name(name){
+Newsgroup::Newsgroup(int id, string name) : ngid(id){
+	this->name = name;
 	nextArtId = 0;
 }
 
-Newsgroup::~Newsgroup(){};
+Newsgroup::~Newsgroup(){}
 
-Newsgroup::getName(){
+string Newsgroup::getName(){
 	return name;
 }
 
@@ -20,6 +21,7 @@ int Newsgroup::createArticle(string name, string author, string text){
 
 int Newsgroup::deleteArticle(int id){
 	Article tempArt(id, "", "", "");
+	
 	auto i = remove(articles.begin(), articles.end(), tempArt);
 	if(i == articles.end()){
 		return 1;
@@ -37,5 +39,5 @@ vector<Article> Newsgroup::getArticles(){
 }
 
 bool Newsgroup::operator==(Newsgroup otherNewsgroup){
-	return id == otherNewsgroup.id;
+	return ngid == otherNewsgroup.ngid;
 }

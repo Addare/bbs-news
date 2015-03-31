@@ -4,10 +4,11 @@ using namespace std;
 Database::Database(){
 
 }
+Database::~Database(){}
 
-int Database::createNewsGroup(std::string name){
-	Newsgroup ng = Newsgroup(nextngid, string name);
-	auto found = find_if(newsgroups.begin(), newsgroups.end(),[name](Newsgroup n){return n.getName() == name});
+int Database::createNewsGroup(string name){
+	Newsgroup ng = Newsgroup(nextngid, name);
+	auto found = find_if(newsgroups.begin(), newsgroups.end(),[name](Newsgroup n){return n.getName() == name;});
 	if(found!=newsgroups.end()){
 		return 1;
 	}
@@ -62,12 +63,13 @@ Article Database::readArticle(int newsgroupid, int articleid){
 	Newsgroup temp = Newsgroup(newsgroupid, "");
 	auto ng = find(newsgroups.begin(), newsgroups.end(), temp);
 	if(ng == newsgroups.end()){
-		return "";
+		return Article(-1, "", "", "");
 	}
 	Article tempArt(articleid, "", "", "");
-	auto art = find(ng.begin(), ng.end(), tempArt);
-	if(art == ng.end()){
-		return "";
+	vector<Article> newsgroup = ng->getArticles();
+	auto art = find(newsgroup.begin(), newsgroup.end(), tempArt);
+	if(art == newsgroup.end()){
+		return Article(-1, "", "", "");
 	}
-	return art;
+	return *art;
 }

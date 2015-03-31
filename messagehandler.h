@@ -2,6 +2,7 @@
 #define MESSAGEHANDLER_H
 #include <string>
 #include "connection.h"
+#include "protocol.h"
 
 
 class Messagehandler
