@@ -2,7 +2,7 @@
 using namespace std;
 
 
-Messagehandler::Messagehandler(Connection c): conn(c){}
+Messagehandler::Messagehandler(Connection& c): conn(c){}
 
 Messagehandler::~Messagehandler(){}
 
@@ -28,11 +28,11 @@ int Messagehandler::recCode(){
 }
 
 int Messagehandler::recInt(){
-	return static_cast<int>(conn.read())<<24 + static_cast<int>(conn.read()<<16)
-			 + static_cast<int>(conn.read())<<8 + static_cast<int>(conn.read());
+	return (static_cast<int>(conn.read())<<24) + (static_cast<int>(conn.read()<<16))
+			 + (static_cast<int>(conn.read())<<8) + static_cast<int>(conn.read());
 }
 
-int Messagehandler::recString(){
+string Messagehandler::recString(){
 	string s;
 	int length = static_cast<int>(conn.read());
 	for(int i = 0; i < length; i++){

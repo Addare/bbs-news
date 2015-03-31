@@ -1,11 +1,13 @@
 #ifndef MESSAGEHANDLER_H
 #define MESSAGEHANDLER_H
+#include <string>
 #include "connection.h"
+
 
 class Messagehandler
 {
 public:
-	Messagehandler(Connection c);
+	Messagehandler(Connection& c);
 	~Messagehandler();
 
 	void sendCode(int code);
@@ -17,7 +19,7 @@ public:
 	std::string recString();
 
 private:
-	Connection conn;
+	Connection& conn;
 };
 
 
