@@ -28,7 +28,7 @@ libclientserver.a: connection.o server.o
 	ar rv libclientserver.a  connection.o server.o
 	ranlib libclientserver.a
 
-client: client.o connection.o 
+client: client.o connection.o messagehandler.o
 
 
 # Phony targets
