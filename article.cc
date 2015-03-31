@@ -2,6 +2,7 @@
 using namespace std;
 
 
+Article::Article(){}
 
 Article::Article(int id, string name, string author, string text){
 	this->id = id;

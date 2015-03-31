@@ -6,6 +6,7 @@
 class Article
 {
 public:
+	Article();
 	Article(int id, std::string name, std::string author, std::string text);
 	~Article();
 	int getId();

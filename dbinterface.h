@@ -1,21 +1,23 @@
 #ifndef DBINTERFACE_H
 #define DBINTERFACE_H
 #include <string>
+#include <stdexcept>
+#include "connectionclosedexception.h"
 #include "server.h"
 #include "database.h"
 #include "newsgroup.h"
 #include "protocol.h"
 
 
-class DBinterface{
+class DBInterface{
 public:
-	DBinterface(int port);
-	~DBinterface();
-	int start_server();
+	DBInterface(int port);
+	~DBInterface();
+	int startServer();
 private:
 	Server serv;
 	Database db;
-	int handle_connection(std::shared_ptr<Connection> c);
+	int handleConnection(std::shared_ptr<Connection> c);
 };
 
 
