@@ -5,6 +5,8 @@
 #include "article.h"
 #include "messagehandler.h"
 #include <vector>
+#include <string>
+#include <algorithm>
 
 class Database{
 public:
@@ -14,8 +16,8 @@ public:
 	int deleteNewsGroup(int newsgroupid);
 	int createArticle(int newsgroupid, std::string name, std::string author, std::string text);
 	int deleteArticle(int newsgroupid, int articleid);
-	vector<Newsgroup> listNewsgroups();
-	vector<Article> listArticles(int newsgroupid);
+	std::vector<Newsgroup> listNewsgroups();
+	std::vector<Article> listArticles(int newsgroupid);
 	Article readArticle(int newsgroupid, int articleid);
 private:
 	int nextngid;

@@ -4,6 +4,7 @@
 #include "server.h"
 #include "database.h"
 #include "newsgroup.h"
+#include "protocol.h"
 
 
 class DBinterface{

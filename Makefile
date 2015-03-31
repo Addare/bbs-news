@@ -17,7 +17,7 @@ CXXFLAGS += -g
 #CPPFLAGS =  -stdlib=libc++
 #CXXFLAGS += -stdlib=libc++
 
-PROGS = client
+PROGS = client servermain
 
 all: $(PROGS)
 
@@ -28,7 +28,8 @@ libclientserver.a: connection.o server.o
 	ar rv libclientserver.a  connection.o server.o
 	ranlib libclientserver.a
 
-client: client.o connection.o 
+client: client.o connection.o
+servermain: servermain.o dbinterface.o database.o article.o newsgroup.o connection.o messagehandler.o server.o
 
 
 # Phony targets

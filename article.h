@@ -12,7 +12,7 @@ public:
 	std::string getName();
 	std::string getAuthor();
 	std::string getText();
-	bool operator==();
+	bool operator==(Article otherArticle);
 
 private:
 	int id;

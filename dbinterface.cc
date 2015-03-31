@@ -2,13 +2,13 @@
 using namespace std;
 
 
-DBinterface::DBinterface(int port): server(port){}
+DBinterface::DBinterface(int port): serv(port){}
 
 DBinterface::~DBinterface(){}
 
 
 int DBinterface::start_server(){
-	if(!serv.isReady)
+	if(!serv.isReady())
 		return 1;
 	while(true){
 		std::shared_ptr<Connection> c = serv.waitForActivity();
@@ -22,23 +22,25 @@ int DBinterface::start_server(){
 	return 0;
 }
 
-int handle_connection(std::shared_ptr<Connection> c){
+int DBinterface::handle_connection(std::shared_ptr<Connection> c){
 	Messagehandler mh(*c);
 	int command = mh.recCode();
-
 	switch (command){
-		case Protocol.COM_LIST_NG:
-			if(mh.recCode != Protocol.COM_END){
+		case Protocol::COM_LIST_NG:
+			if(mh.recCode() != Protocol::COM_END){
 				return 1;
 			}
-			vector<Newsgroup> newsgroups = db.listNewsGroups();
-			mh.sendCode(Protocol.ANS_LIST_NG);
+			vector<Newsgroup> newsgroups = db.listNewsgroups();
+			mh.sendCode(Protocol::ANS_LIST_NG);
 			mh.sendInt(newsgroups.size());
 			for(Newsgroup& ng: newsgroups){
-				mh.sendInt(ng.getId);
+				mh.sendInt(ng.getId());
 				mh.sendString(ng.getName());
 			}
-			mh.sendCode(Protocol.ANS_END)
+			mh.sendCode(Protocol::ANS_END);
+			break;
+
+			//add more cases
 	}
 
 	return 0;
