@@ -2,14 +2,15 @@
 using namespace std;
 #include <iostream>
 
-DBInterface::DBInterface(int port): serv(port){}
+DBInterface::DBInterface(int port): serv(port), db("/h/d1/t/dat11jfo/eda031/project/clientserver/database"){}
 
 DBInterface::~DBInterface(){}
 
 
 int DBInterface::startServer(){
-	if(!serv.isReady())
+	if(!serv.isReady()){
 		return 1;
+	}
 	while(true){
 		std::shared_ptr<Connection> c;
 		try{

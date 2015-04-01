@@ -29,7 +29,7 @@ libclientserver.a: connection.o server.o
 	ranlib libclientserver.a
 
 client: client.o connection.o messagehandler.o
-servermain: servermain.o dbinterface.o database.o article.o newsgroup.o connection.o messagehandler.o server.o
+servermain: servermain.o dbinterface.o discdatabase.o article.o newsgroup.o connection.o messagehandler.o server.o
 
 
 # Phony targets

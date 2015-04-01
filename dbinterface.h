@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include "connectionclosedexception.h"
 #include "server.h"
-#include "database.h"
+#include "discdatabase.h"
 #include "newsgroup.h"
 #include "protocol.h"
 
@@ -16,7 +16,7 @@ public:
 	int startServer();
 private:
 	Server serv;
-	Database db;
+	DiscDatabase db;
 	int handleConnection(std::shared_ptr<Connection> c);
 };
 
