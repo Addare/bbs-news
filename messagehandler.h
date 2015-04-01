@@ -12,11 +12,11 @@ public:
 	~Messagehandler();
 
 	void sendCode(int code);
-	void sendInt(int value);
+	void sendInt(int value, bool paramNum = true);
 	void sendString(std::string text);
 
 	int recCode();
-	int recInt();
+	int recInt(bool check = true);
 	std::string recString();
 
 private:

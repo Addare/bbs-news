@@ -1,13 +1,13 @@
 #include "dbinterface.h"
 using namespace std;
+#include <iostream>
+
+DBInterface::DBInterface(int port): serv(port){}
+
+DBInterface::~DBInterface(){}
 
 
-DBinterface::DBinterface(int port): serv(port){}
-
-DBinterface::~DBinterface(){}
-
-
-int DBinterface::start_server(){
+int DBInterface::startServer(){
 	if(!serv.isReady())
 		return 1;
 	while(true){
@@ -18,7 +18,7 @@ int DBinterface::start_server(){
 				c = make_shared<Connection>();
 				serv.registerConnection(c);
 			}else{
-				handle_connection(c);
+				handleConnection(c);
 			}
 		}catch(ConnectionClosedException& e){
 			serv.deregisterConnection(c);
@@ -27,9 +27,10 @@ int DBinterface::start_server(){
 	return 0;
 }
 
-int DBinterface::handle_connection(std::shared_ptr<Connection> c){
+int DBInterface::handleConnection(std::shared_ptr<Connection> c){
 	Messagehandler mh(*c);
 	int command = mh.recCode();
+	cout<<"current command "<<command<<endl;;
 	switch (command){
 		case Protocol::COM_LIST_NG:
 		 	{
@@ -53,14 +54,17 @@ int DBinterface::handle_connection(std::shared_ptr<Connection> c){
 				if(mh.recCode() != Protocol::COM_END){
 					return 1;
 				}
+				cout<<ng_name<<endl;
 				mh.sendCode(Protocol::ANS_CREATE_NG);
 				if(db.createNewsGroup(ng_name) != 0){
 					mh.sendCode(Protocol::ANS_NAK);
 					mh.sendCode(Protocol::ERR_NG_ALREADY_EXISTS);
 				}else{
+					cout<<"ack\n";
 					mh.sendCode(Protocol::ANS_ACK);
 				}
 				mh.sendCode(Protocol::ANS_END);
+				cout<<"success?\n";
 				break;
 			}
 
@@ -157,7 +161,7 @@ int DBinterface::handle_connection(std::shared_ptr<Connection> c){
 					return 1;
 				}
 				mh.sendCode(Protocol::ANS_GET_ART);
-				int result = db.readArticle(ng_id, art_id, &a);
+				int result = db.readArticle(ng_id, art_id, a);
 				if(result != 0){
 					mh.sendCode(Protocol::ANS_NAK);
 					if(result == 2){

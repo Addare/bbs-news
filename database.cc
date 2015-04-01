@@ -33,7 +33,8 @@ int Database::createArticle(int newsgroupid, std::string name, std::string autho
 	if(ng == newsgroups.end()){
 		return 1;
 	}
-	return ng->createArticle(name, author, text);;
+	ng->createArticle(name, author, text);
+	return 0;
 }
 
 int Database::deleteArticle(int newsgroupid, int articleid){
@@ -59,7 +60,7 @@ int Database::listArticles(int newsgroupid, vector<Article>& v){
 	return 0;
 }
 	
-int Database::readArticle(int newsgroupid, int articleid, Article* a){
+int Database::readArticle(int newsgroupid, int articleid, Article& a){
 	Newsgroup temp = Newsgroup(newsgroupid, "");
 	auto ng = find(newsgroups.begin(), newsgroups.end(), temp);
 	if(ng == newsgroups.end()){
@@ -71,6 +72,6 @@ int Database::readArticle(int newsgroupid, int articleid, Article* a){
 	if(art == newsgroup.end()){
 		return 1;
 	}
-	a = &(*art);
+	a = (*art);
 	return 0;
 }

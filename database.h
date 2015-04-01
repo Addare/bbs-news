@@ -18,7 +18,7 @@ public:
 	int deleteArticle(int newsgroupid, int articleid);
 	std::vector<Newsgroup> listNewsgroups();
 	int listArticles(int newsgroupid, std::vector<Article>& v);
-	int readArticle(int newsgroupid, int articleid, Article* a);
+	int readArticle(int newsgroupid, int articleid, Article& a);
 private:
 	int nextngid;
 	std::vector<Newsgroup> newsgroups;

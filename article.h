@@ -7,6 +7,7 @@ class Article
 {
 public:
 	Article();
+	Article(const Article& rhs);
 	Article(int id, std::string name, std::string author, std::string text);
 	~Article();
 	int getId();
@@ -14,6 +15,7 @@ public:
 	std::string getAuthor();
 	std::string getText();
 	bool operator==(Article otherArticle);
+	Article& operator=(const Article& rhs);
 
 private:
 	int id;
@@ -21,4 +23,5 @@ private:
 	std::string author;
 	std::string text;
 };
+
 #endif
