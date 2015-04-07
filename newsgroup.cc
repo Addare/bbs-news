@@ -19,6 +19,15 @@ int Newsgroup::createArticle(string name, string author, string text){
 	return nextArtId - 1;
 }
 
+int Newsgroup::createArticle(int articleid, string name, string author, string text){
+	Article toAdd = Article(articleid, name, author, text);
+	articles.push_back(toAdd);
+	if(articleid > nextArtId){
+		nextArtId = articleid + 1;
+	}
+	return articleid;
+}
+
 int Newsgroup::deleteArticle(int id){
 	Article tempArt(id, "", "", "");
 
