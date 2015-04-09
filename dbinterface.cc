@@ -29,7 +29,8 @@ int DBInterface::startServer(){
 				cout<<"client connected\n";
 			}else{
 				if(handleConnection(c)){
-					cerr<<"unknown command recieved";
+					cerr<<"unknown command or data recieved; Disconnecting client.";
+					serv.deregisterConnection(c);
 				}
 			}
 		}catch(ConnectionClosedException& e){
@@ -46,7 +47,7 @@ int DBInterface::handleConnection(std::shared_ptr<Connection> c){
 	switch (command){
 		case Protocol::COM_LIST_NG:
 		 	{
-				if(mh.recCode() != Protocol::COM_END){
+				if(mh.recCode() != Protocol::COM_END || mh.getStatus() != 0){
 					return 1;
 				}
 				vector<Newsgroup> newsgroups = db->listNewsgroups();
@@ -63,7 +64,7 @@ int DBInterface::handleConnection(std::shared_ptr<Connection> c){
 		case Protocol::COM_CREATE_NG:
 			{
 				string ng_name = mh.recString();
-				if(mh.recCode() != Protocol::COM_END){
+				if(mh.recCode() != Protocol::COM_END || mh.getStatus() != 0){
 					return 1;
 				}
 				mh.sendCode(Protocol::ANS_CREATE_NG);
@@ -80,7 +81,7 @@ int DBInterface::handleConnection(std::shared_ptr<Connection> c){
 		case Protocol::COM_DELETE_NG:
 			{
 				int ng_id = mh.recInt();
-				if(mh.recCode() != Protocol::COM_END){
+				if(mh.recCode() != Protocol::COM_END || mh.getStatus() != 0){
 					return 1;
 				}
 				mh.sendCode(Protocol::ANS_DELETE_NG);
@@ -98,7 +99,7 @@ int DBInterface::handleConnection(std::shared_ptr<Connection> c){
 			{
 				int ng_id = mh.recInt();
 				vector<Article> v;
-				if(mh.recCode() != Protocol::COM_END){
+				if(mh.recCode() != Protocol::COM_END || mh.getStatus() != 0){
 					return 1;
 				}
 				mh.sendCode(Protocol::ANS_LIST_ART);
@@ -123,7 +124,7 @@ int DBInterface::handleConnection(std::shared_ptr<Connection> c){
 				string title = mh.recString();
 				string author = mh.recString();
 				string text = mh.recString();
-				if(mh.recCode() != Protocol::COM_END){
+				if(mh.recCode() != Protocol::COM_END || mh.getStatus() != 0){
 					return 1;
 				}
 				mh.sendCode(Protocol::ANS_CREATE_ART);
@@ -142,7 +143,7 @@ int DBInterface::handleConnection(std::shared_ptr<Connection> c){
 			{
 				int ng_id = mh.recInt();
 				int art_id = mh.recInt();
-				if(mh.recCode() != Protocol::COM_END){
+				if(mh.recCode() != Protocol::COM_END || mh.getStatus() != 0){
 					return 1;
 				}
 				mh.sendCode(Protocol::ANS_DELETE_ART);
@@ -166,7 +167,7 @@ int DBInterface::handleConnection(std::shared_ptr<Connection> c){
 				int ng_id = mh.recInt();
 				int art_id = mh.recInt();
 				Article a;
-				if(mh.recCode() != Protocol::COM_END){
+				if(mh.recCode() != Protocol::COM_END || mh.getStatus() != 0){
 					return 1;
 				}
 				mh.sendCode(Protocol::ANS_GET_ART);

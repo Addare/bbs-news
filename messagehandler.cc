@@ -3,7 +3,7 @@
 using namespace std;
 
 
-Messagehandler::Messagehandler(Connection& c): conn(c){}
+Messagehandler::Messagehandler(Connection& c): conn(c), status(0){}
 
 Messagehandler::~Messagehandler(){}
 
@@ -35,7 +35,8 @@ int Messagehandler::recCode(){
 
 int Messagehandler::recInt(bool check){
 	if(check && recCode() != Protocol::PAR_NUM){
-			cerr<<"not an int\n";
+			cerr<<"Network protocol error: expected int\n";
+			currentStatus = 1;
 	}
 	return (static_cast<int>(conn.read())<<24) + (static_cast<int>(conn.read()<<16))
 			 + (static_cast<int>(conn.read())<<8) + static_cast<int>(conn.read());
@@ -43,7 +44,8 @@ int Messagehandler::recInt(bool check){
 
 string Messagehandler::recString(){
 	if(recCode() != Protocol::PAR_STRING){
-			cerr<<"not a string\n";
+			cerr<<"Network protocol error: expected string\n";
+			currentStatus = 1;
 	}
 	string s;
 	int length = recInt(false);

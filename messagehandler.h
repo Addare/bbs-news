@@ -19,8 +19,11 @@ public:
 	int recInt(bool check = true);
 	std::string recString();
 
+	int getStatus();
+
 private:
 	Connection& conn;
+	int currentStatus;
 };
 
 
