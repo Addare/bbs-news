@@ -3,7 +3,7 @@
 using namespace std;
 
 
-Messagehandler::Messagehandler(Connection& c): conn(c), status(0){}
+Messagehandler::Messagehandler(Connection& c): conn(c), currentStatus(0){}
 
 Messagehandler::~Messagehandler(){}
 
@@ -53,4 +53,8 @@ string Messagehandler::recString(){
 		s += conn.read();
 	}
 	return s;
+}
+
+int Messagehandler::getStatus(){
+	return currentStatus;
 }
