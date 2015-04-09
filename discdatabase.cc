@@ -53,6 +53,10 @@ int DiscDatabase::restoreFromFile(){
   			}
     	}
     index.close();
+  	}else{
+  		ofstream o;
+  		o.open(path + "/index");
+  		o.close();
   	}
   	return 0;
 }
@@ -219,7 +223,7 @@ int DiscDatabase::deleteArticleOnFile(int newsgroupid, int articleid){
 	return 0;
 }
 
-vector<Newsgroup> DiscDatabase::listNewsgroups(){
+/*vector<Newsgroup> DiscDatabase::listNewsgroups(){
 	return newsgroups;
 }
 
@@ -247,4 +251,4 @@ int DiscDatabase::readArticle(int newsgroupid, int articleid, Article& a){
 	}
 	a = (*art);
 	return 0;
-}
+}*/

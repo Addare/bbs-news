@@ -11,12 +11,12 @@
 
 class DBInterface{
 public:
-	DBInterface(int port);
+	DBInterface(int port, bool disc);
 	~DBInterface();
 	int startServer();
 private:
 	Server serv;
-	DiscDatabase db;
+	Database* db;
 	int handleConnection(std::shared_ptr<Connection> c);
 };
 

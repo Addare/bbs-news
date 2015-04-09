@@ -13,7 +13,7 @@ int main(int argc,char *argv[]){
 	if(argc == 2){
 		port = static_cast<int>(*argv[1]);
 	}
-	DBInterface db(port);
+	DBInterface db(port, false);
 	db.startServer();
 	return 0;
 }

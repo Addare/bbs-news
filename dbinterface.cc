@@ -2,9 +2,17 @@
 using namespace std;
 #include <iostream>
 
-DBInterface::DBInterface(int port): serv(port), db("/h/d1/t/dat11jfo/eda031/project/clientserver/database"){}
+DBInterface::DBInterface(int port, bool disc): serv(port){
+	if(disc){
+		db = new DiscDatabase("database");
+	}else{
+		db = new Database();
+	}
+}
 
-DBInterface::~DBInterface(){}
+DBInterface::~DBInterface(){
+	delete db;
+}
 
 
 int DBInterface::startServer(){
@@ -38,7 +46,7 @@ int DBInterface::handleConnection(std::shared_ptr<Connection> c){
 				if(mh.recCode() != Protocol::COM_END){
 					return 1;
 				}
-				vector<Newsgroup> newsgroups = db.listNewsgroups();
+				vector<Newsgroup> newsgroups = db->listNewsgroups();
 				mh.sendCode(Protocol::ANS_LIST_NG);
 				mh.sendInt(newsgroups.size());
 				for(Newsgroup& ng: newsgroups){
@@ -57,7 +65,7 @@ int DBInterface::handleConnection(std::shared_ptr<Connection> c){
 				}
 				cout<<ng_name<<endl;
 				mh.sendCode(Protocol::ANS_CREATE_NG);
-				if(db.createNewsGroup(ng_name) != 0){
+				if(db->createNewsGroup(ng_name) != 0){
 					mh.sendCode(Protocol::ANS_NAK);
 					mh.sendCode(Protocol::ERR_NG_ALREADY_EXISTS);
 				}else{
@@ -76,7 +84,7 @@ int DBInterface::handleConnection(std::shared_ptr<Connection> c){
 					return 1;
 				}
 				mh.sendCode(Protocol::ANS_DELETE_NG);
-				if(db.deleteNewsGroup(ng_id) != 0){
+				if(db->deleteNewsGroup(ng_id) != 0){
 					mh.sendCode(Protocol::ANS_NAK);
 					mh.sendCode(Protocol::ERR_NG_DOES_NOT_EXIST);
 				}else{
@@ -94,7 +102,7 @@ int DBInterface::handleConnection(std::shared_ptr<Connection> c){
 					return 1;
 				}
 				mh.sendCode(Protocol::ANS_LIST_ART);
-				if(db.listArticles(ng_id, v) != 0){
+				if(db->listArticles(ng_id, v) != 0){
 					mh.sendCode(Protocol::ANS_NAK);
 					mh.sendCode(Protocol::ERR_NG_DOES_NOT_EXIST);
 				}else{
@@ -120,7 +128,7 @@ int DBInterface::handleConnection(std::shared_ptr<Connection> c){
 				}
 				mh.sendCode(Protocol::ANS_CREATE_ART);
 				
-				if(db.createArticle(id, title, author, text)){
+				if(db->createArticle(id, title, author, text)){
 					mh.sendCode(Protocol::ANS_NAK);
 					mh.sendCode(Protocol::ERR_NG_DOES_NOT_EXIST);
 				}else{
@@ -138,7 +146,7 @@ int DBInterface::handleConnection(std::shared_ptr<Connection> c){
 					return 1;
 				}
 				mh.sendCode(Protocol::ANS_DELETE_ART);
-				int result = db.deleteArticle(ng_id, art_id);
+				int result = db->deleteArticle(ng_id, art_id);
 				if(result != 0){
 					mh.sendCode(Protocol::ANS_NAK);
 					if(result == 2){
@@ -162,7 +170,7 @@ int DBInterface::handleConnection(std::shared_ptr<Connection> c){
 					return 1;
 				}
 				mh.sendCode(Protocol::ANS_GET_ART);
-				int result = db.readArticle(ng_id, art_id, a);
+				int result = db->readArticle(ng_id, art_id, a);
 				if(result != 0){
 					mh.sendCode(Protocol::ANS_NAK);
 					if(result == 2){
