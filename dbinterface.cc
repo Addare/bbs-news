@@ -26,11 +26,15 @@ int DBInterface::startServer(){
 			if(c == nullptr){
 				c = make_shared<Connection>();
 				serv.registerConnection(c);
+				cout<<"client connected\n";
 			}else{
-				handleConnection(c);
+				if(handleConnection(c)){
+					cerr<<"unknown command recieved";
+				}
 			}
 		}catch(ConnectionClosedException& e){
 			serv.deregisterConnection(c);
+			cout<<"client disconnected\n";
 		}
 	}
 	return 0;
@@ -39,7 +43,6 @@ int DBInterface::startServer(){
 int DBInterface::handleConnection(std::shared_ptr<Connection> c){
 	Messagehandler mh(*c);
 	int command = mh.recCode();
-	cout<<"current command "<<command<<endl;;
 	switch (command){
 		case Protocol::COM_LIST_NG:
 		 	{
@@ -63,17 +66,14 @@ int DBInterface::handleConnection(std::shared_ptr<Connection> c){
 				if(mh.recCode() != Protocol::COM_END){
 					return 1;
 				}
-				cout<<ng_name<<endl;
 				mh.sendCode(Protocol::ANS_CREATE_NG);
 				if(db->createNewsGroup(ng_name) != 0){
 					mh.sendCode(Protocol::ANS_NAK);
 					mh.sendCode(Protocol::ERR_NG_ALREADY_EXISTS);
 				}else{
-					cout<<"ack\n";
 					mh.sendCode(Protocol::ANS_ACK);
 				}
 				mh.sendCode(Protocol::ANS_END);
-				cout<<"success?\n";
 				break;
 			}
 
@@ -188,7 +188,7 @@ int DBInterface::handleConnection(std::shared_ptr<Connection> c){
 				break;
 			}
 
-		default: return 1;		//add more cases
+		default: return 1;
 	}
 
 	return 0;
