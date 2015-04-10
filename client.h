@@ -2,6 +2,7 @@
 #include <string>
 #include <stdexcept>
 #include <map>
+#include <sstream>
 
 #include "connection.h"
 #include "connectionclosedexception.h"
@@ -10,13 +11,10 @@
 
 struct Client {
 	Messagehandler msgHnd;
-	std::string mode = "news";
 	std::map<std::string, void (Client::*)()> cmd;
 	
-	Client(Connection& c);
+	Client(Connection&);
 	
-	void mode_ng();
-	void mode_art();
 	void cmd_quit();
 	void cmd_help();
 	void list_ng();

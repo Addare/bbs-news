@@ -6,8 +6,6 @@ void dbgCode(int a, int b) {
 }
 
 Client::Client(Connection& c) : msgHnd(c) {
-	cmd["news"] = &Client::mode_ng;
-	cmd["article"] = &Client::mode_art;
 	cmd["quit"] = &Client::cmd_quit;
 	cmd["help"] = &Client::cmd_help;
 
@@ -21,12 +19,22 @@ Client::Client(Connection& c) : msgHnd(c) {
 	cmd["get_article"] = &Client::get_art;
 }
 	
-void Client::mode_ng() { mode = "news"; }
-void Client::mode_art() { mode = "article"; }
 void Client::cmd_quit() { exit(0); }
 
 void Client::cmd_help() {
-	std::cerr << "stub! " << __FILE__ << ":" << __func__ << ":" << __LINE__ << std::endl;
+	std::cout << "\tquit             \t\t Quit the program" << std::endl;
+	std::cout << "\thelp             \t\t Print this help text" << std::endl;
+	std::cout << std::endl;
+	std::cout << "\tnews [command]   \t\t Edit newsgroups" << std::endl;
+	std::cout << "\t.... list        \t\t List all newsgroups stored on the server" << std::endl;
+	std::cout << "\t.... create      \t\t Create a new newsgroup" << std::endl;
+	std::cout << "\t.... delete      \t\t Delete a specified newsgroup" << std::endl;
+	std::cout << std::endl;
+	std::cout << "\tarticle [command]\t\t Edit articles" << std::endl;
+	std::cout << "\t.... list        \t\t List all articles in the specified newsgroup stored on the server" << std::endl;
+	std::cout << "\t.... get         \t\t Get single article in specified newsgroup" << std::endl;
+	std::cout << "\t.... create      \t\t Create a new article in the specified newsgroup" << std::endl;
+	std::cout << "\t.... delete      \t\t Delete an article in the specified newsgroup" << std::endl;
 }
 
 void Client::list_ng() {
@@ -37,15 +45,16 @@ void Client::list_ng() {
 	dbgCode(Protocol::ANS_LIST_NG, code);
 
 	int n = msgHnd.recInt();
+	std::cout << "#" << n << " newsgroups received" << std::endl;
 	int i = 0;
 	while (i < n) {
 		int id = msgHnd.recInt();
 		std::string title = msgHnd.recString();
-		std::cout << "[" << id << "]: " << title;
+		std::cout << "[" << id << "]: " << title << std::endl;
 
 		i++;
 	}
-
+	
 	code = msgHnd.recCode();
 	dbgCode(Protocol::ANS_END, code);
 }
@@ -64,6 +73,8 @@ void Client::create_ng() {
 	code = msgHnd.recCode();
 	if (code == Protocol::ANS_NAK) {
 		code = msgHnd.recCode(); // error-code
+		dbgCode(Protocol::ERR_NG_ALREADY_EXISTS, code);
+		std::cerr << "ERROR: unable to create newsgroup, newwsgroup already exists" << std::endl;
 	} else {
 		dbgCode(Protocol::ANS_ACK, code);
 	}	
@@ -87,6 +98,8 @@ void Client::delete_ng() {
 	code = msgHnd.recCode();
 	if (code == Protocol::ANS_NAK) {
 		code = msgHnd.recCode(); // error-code
+		dbgCode(Protocol::ERR_NG_DOES_NOT_EXIST, code);
+		std::cerr << "ERROR: Unable to delete newsgroup, newsgroup does not exist" << std::endl;
 	} else {
 		dbgCode(Protocol::ANS_ACK, code);
 	}
@@ -97,7 +110,7 @@ void Client::delete_ng() {
 
 void Client::list_art() {
 	int id;
-	std::cout << "article-id> "; std::cin >> id;
+	std::cout << "newsgroup-id> "; std::cin >> id;
 	std::cin.ignore();
 
 	msgHnd.sendCode(Protocol::COM_LIST_ART);
@@ -110,17 +123,21 @@ void Client::list_art() {
 	code = msgHnd.recCode();
 	if (code == Protocol::ANS_ACK) {
 		int n = msgHnd.recInt();
+		std::cout << "#" << n << " articles received" << std::endl;
+
 		int i = 0;
 		while (i < n) {
 			int id = msgHnd.recInt();
 			std::string title = msgHnd.recString();
-			std::cout << "[" << id << "]: " << title;
+			std::cout << "[" << id << "]: " << title << std::endl;
 
 			i++;
 		}
 	} else {
 		dbgCode(Protocol::ANS_NAK, code);
 		code = msgHnd.recCode(); // error-code
+		dbgCode(Protocol::ERR_NG_DOES_NOT_EXIST, code);
+		std::cerr << "ERROR! Unable to list article in given newsgroup, newsgroup does not exist!" << std::endl;
 	}
 
 	code = msgHnd.recCode();
@@ -131,7 +148,7 @@ void Client::create_art() {
 	int id;
 	std::string title, author, text;
 
-	std::cout << "article-id> "; std::cin >> id;
+	std::cout << "newsgroup-id> "; std::cin >> id;
 	std::cin.ignore();
 
 	std::cout << "article-title> "; std::getline(std::cin, title);
@@ -151,6 +168,8 @@ void Client::create_art() {
 	code = msgHnd.recCode();
 	if (code == Protocol::ANS_NAK) {
 		code = msgHnd.recCode(); // error-code
+		dbgCode(Protocol::ERR_NG_DOES_NOT_EXIST, code);
+		std::cerr << "ERROR! Unable to create article in given newsgroup, newsgroup does not exist!" << std::endl;
 	} else {
 		dbgCode(Protocol::ANS_ACK, code);
 	}
@@ -176,6 +195,12 @@ void Client::delete_art() {
 	code = msgHnd.recCode();
 	if (code == Protocol::ANS_NAK) {
 		code = msgHnd.recCode(); // error-code
+		if (code == Protocol::ERR_NG_DOES_NOT_EXIST) {
+			std::cerr << "ERROR! Unable to delete article in given newsgroup, newsgroup does not exist!" << std::endl;
+		} else {
+			dbgCode(Protocol::ERR_ART_DOES_NOT_EXIST, code);
+			std::cerr << "ERROR! Unable to delete article, article does not exist!" << std::endl;
+		}
 	} else {
 		dbgCode(Protocol::ANS_ACK, code);
 	}
@@ -203,8 +228,24 @@ void Client::get_art() {
 		std::string title = msgHnd.recString();
 		std::string author = msgHnd.recString();
 		std::string text = msgHnd.recString();
+
+		std::cout << "-- " << title << " --- Written by: " << author << std::endl;
+
+		unsigned int line_length = title.length() + author.length() + 20;
+		for (unsigned int i = 0; i < line_length; i++)
+			std::cout << "-";
+		std::cout << std::endl;
+
+		std::cout << text << std::endl;
+
 	} else {
 		code = msgHnd.recCode(); // error-code
+		if (code == Protocol::ERR_NG_DOES_NOT_EXIST) 
+			std::cerr << "ERROR! Unable to get article in given newsgroup, newsgroup does not exist!" << std::endl;
+		else { 
+			dbgCode(Protocol::ERR_ART_DOES_NOT_EXIST, code);
+			std::cerr << "ERROR! Unable to get given article, article does not exist!" << std::endl;
+		}
 	}
 
 	code = msgHnd.recCode();
@@ -212,12 +253,13 @@ void Client::get_art() {
 }
 
 int main(int argc, char* argv[]) {
+
 	if (argc != 3) {
 		std::cerr << "Usage: client host port" << std::endl;
 		exit(1);
 	}
 
-	int port = -1;
+	int port = 4242;
 	try {
 		port = std::stoi(argv[2]);
 	} catch (std::exception& e) {
@@ -225,7 +267,7 @@ int main(int argc, char* argv[]) {
 		exit(1);
 	}	
 
-	/**Connection conn(argv[1], port);
+	Connection conn(argv[1], port);
 	if (!conn.isConnected()) {
 		std::cerr << "Connection attempt failed" << std::endl;
 		exit(1);
@@ -234,21 +276,40 @@ int main(int argc, char* argv[]) {
 	Client client(conn);
 
 
-	std::cout << client.mode << "> ";
+	std::cout << "bbs-news> ";
 
-	std::string command;
-	while (std::getline(std::cin, command)) {
-		auto cmd = client.cmd.find(command + "_" + client.mode);
-		if (cmd == client.cmd.end()) {
-			cmd = client.cmd.find(command);
+	std::string tmp;
+	while (std::getline(std::cin, tmp)) {
+		std::stringstream input(tmp);
+		std::string mode, command;
+		
+		input >> mode;
+		if (input.eof()) {
+			client.cmd_help();
+			std::cout << "bbs-news> ";
+			continue;
+		}
+
+		input >> command;
+
+		if (mode != "news" && mode != "article") {
+			auto cmd = client.cmd.find(command);
 			if (cmd != client.cmd.end()) 
-				cmd->second;
+				(client.*cmd->second)();
 			else 
 				client.cmd_help();
-		} else 
+			
+			std::cout << "bbs-news> ";
+			continue;
+		}
+
+		auto cmd = client.cmd.find(command + "_" + mode);
+		if (cmd == client.cmd.end())
+			 client.cmd_help();
+		else 
 			(client.*cmd->second)();
 		
-		std::cout << client.mode << "> ";
-	}**/
+		std::cout << "bbs-news> ";
+	}
 }
 
